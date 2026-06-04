@@ -97,42 +97,10 @@
                 android:resource="@xml/sigmob_provider_paths" />
         </provider>
 
-        <!-- TT 国内 -->
-        <provider
-            android:name="com.bytedance.sdk.openadsdk.TTFileProvider"
-            android:authorities="${applicationId}.TTFileProvider"
-            android:exported="false"
-            android:grantUriPermissions="true">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths" />
-        </provider>
+
 
         <!-- TT（国内） GP专属 -->
-        <provider
-            android:name="com.bytedance.sdk.openadsdk.multipro.TTMultiProvider"
-            android:authorities="${applicationId}.TTMultiProvider"
-            android:exported="false" /> <!-- GDT -->
-        <provider
-            android:name="com.qq.e.comm.GDTFileProvider"
-            android:authorities="${applicationId}.gdt.fileprovider"
-            android:exported="false"
-            android:grantUriPermissions="true">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/gdt_file_path" />
-        </provider>
 
-        <!-- 游可赢 -->
-        <provider
-            android:name="com.tencent.klevin.utils.FileProvider"
-            android:authorities="${applicationId}.klevin.fileProvider"
-            android:exported="false"
-            android:grantUriPermissions="true">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/klevin_provider_paths" />
-        </provider>
 
         <activity
             android:name=".SplashActivity"

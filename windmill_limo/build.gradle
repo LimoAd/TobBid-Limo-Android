@@ -1,0 +1,147 @@
+plugins {
+    id 'com.android.library'
+    id 'maven-publish'
+}
+// 生成 "月日_时分" 格式的时间戳
+def timeStamp = new Date().format('MMdd_HHmm')
+android {
+    compileSdkVersion rootProject.ext.android.compileSdkVersion
+    buildToolsVersion rootProject.ext.android.buildToolsVersion
+    namespace = "com.windmill.limo"
+    defaultConfig {
+        consumerProguardFiles 'consumer-rules.pro'
+        minSdkVersion rootProject.ext.android.minSdkVersion
+        targetSdkVersion rootProject.ext.android.targetSdkVersion
+        versionCode rootProject.ext.sdkVersion.limoVersionCode
+        versionName rootProject.ext.sdkVersion.limoVersionName
+        buildConfigField "int", "VERSION_CODE", "$versionCode"
+        buildConfigField "String", "VERSION_NAME", "\"$versionName\""
+    }
+
+
+    buildTypes {
+        debug {
+            // 是否混淆
+            minifyEnabled false
+            // zipAlign优化
+            zipAlignEnabled true
+            // 是否可以debug
+            debuggable true
+            jniDebuggable true
+            // 移除无用的resource文件
+            shrinkResources false
+            // 混淆配置文件的位置
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        release {
+
+            minifyEnabled false
+            // 混淆配置文件的位置
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+
+    libraryVariants.all { variant ->
+        variant.outputs.all { output ->
+            if (outputFileName.endsWith('.aar')) {
+                // 定义产品名
+                def productName = "windmill_limo"
+                // 获取版本名（假设已在 defaultConfig 中定义 versionName）
+                def version =rootProject.ext.sdkVersion.limoVersionName
+
+                // 拼接最终文件名
+                outputFileName = "${productName}_${version}_${timeStamp}.aar"
+            }
+        }
+    }
+}
+
+repositories {
+    flatDir {
+        dirs 'libs'
+    }
+}
+
+def sdkVersionName = rootProject.ext.sdkVersion.limoVersionName ?: "1.0.0"
+
+
+
+
+// ------------------- 发布配置 -------------------
+
+// ------------------- 源码 Jar -------------------
+task androidSourcesJar(type: Jar) {
+    archiveClassifier.set('sources')
+    from android.sourceSets.main.java.srcDirs
+}
+
+// ------------------- 空 Javadoc Jar -------------------
+task emptyJavadocJar(type: Jar) {
+    archiveClassifier.set('javadoc')
+}
+
+def getProductName() {
+    return "windmill_limo"
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            create("nexusPublish", MavenPublication) {
+
+                artifact("$buildDir/outputs/aar/${getProductName()}_${sdkVersionName}_${timeStamp}.aar") {
+                    //builtBy "assembleRelease" // 确保先构建 AAR
+                    builtBy tasks.named("assembleRelease")
+                }
+
+
+                artifact androidSourcesJar
+                artifact emptyJavadocJar
+
+
+                groupId = "com.limo.sdk"
+                artifactId = "windmill-limo-adapter"
+                version = sdkVersionName
+
+                // 自动写入 implementation 依赖到 POM
+                pom.withXml {
+                    def dependenciesNode = asNode().appendNode('dependencies')
+                    configurations.implementation.allDependencies.each { dep ->
+                        if (dep.group && dep.name && dep.version) {
+                            def dependencyNode = dependenciesNode.appendNode('dependency')
+                            dependencyNode.appendNode('groupId', dep.group)
+                            dependencyNode.appendNode('artifactId', dep.name)
+                            dependencyNode.appendNode('version', dep.version)
+                            dependencyNode.appendNode('scope', 'compile')
+                        }
+                    }
+                }
+            }
+        }
+
+        repositories {
+            maven {
+                name = "nexus"
+                url = uri("http://maven.leadmoad.com/repository/maven-releases/")
+                allowInsecureProtocol = true
+                credentials {
+                    username = 'honglang'
+                    password = 'honglang@312'
+                }
+            }
+        }
+    }
+}
+
+dependencies {
+    compileOnly 'androidx.core:core:1.7.0'
+    compileOnly(files("libs/adbid_sdk_2.1.0.14_0512_1606.aar"))
+    compileOnly(files("libs/wind-common-2.0.2.aar"))
+    compileOnly(files("libs/wind-sdk-4.25.21.aar"))
+    compileOnly(files("libs/windmill-sdk-4.8.7.aar"))
+}

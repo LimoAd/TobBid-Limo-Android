@@ -1,0 +1,13 @@
+ext {
+    android = [compileSdkVersion: 33,
+               minSdkVersion    : 21,
+               targetSdkVersion : 33,
+               junitVersion     : '4.12',
+               kotlin_version   : '1.4.21',
+               buildToolsVersion: "30.0.3",]
+
+    sdkVersion = [limoVersionName: '1.0.0',
+                  limoVersionCode: 100000,
+                ]
+
+}

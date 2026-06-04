@@ -159,6 +159,10 @@ public class SplashAdActivity extends Activity implements AdapterView.OnItemSele
                 logCallBack("onSplashAdSuccessPresent", "");
             }
 
+            @Override public void onSplashAdFailToPresent(WindMillError error, String placementId) {
+
+            }
+
             @Override
             public void onSplashAdSuccessLoad(String placementId) {
                 logCallBack("onSplashAdSuccessLoad", "");

@@ -72,7 +72,8 @@ public class MyApplication extends MultiDexApplication {
 //                .addInitConfig(new WMAdnInitConfig(WMNetworkConfig.TAPTAP, "appId", "appKey"));
 //        ads.setInitNetworkConfig(builder.build());
 
-        ads.startWithAppId(this, "16991", new WMAdConfig.Builder().customController(new WMCustomController() {
+        ads.startWithAppId(this, "72732",
+                new WMAdConfig.Builder().customController(new WMCustomController() {
             @Override
             public boolean isCanUseLocation() {
                 return super.isCanUseLocation();
