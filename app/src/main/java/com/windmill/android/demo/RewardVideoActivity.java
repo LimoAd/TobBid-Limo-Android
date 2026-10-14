@@ -14,7 +14,6 @@ import android.widget.Spinner;
 import com.windmill.android.demo.log.CallBackInfo;
 import com.windmill.android.demo.log.CallBackItem;
 import com.windmill.android.demo.log.ExpandAdapter;
-import com.windmill.sdk.WMConstants;
 import com.windmill.sdk.WindMillError;
 import com.windmill.sdk.models.AdInfo;
 import com.windmill.sdk.reward.WMRewardAd;
@@ -23,9 +22,7 @@ import com.windmill.sdk.reward.WMRewardAdRequest;
 import com.windmill.sdk.reward.WMRewardInfo;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class RewardVideoActivity extends Activity implements AdapterView.OnItemSelectedListener {
 
@@ -33,7 +30,6 @@ public class RewardVideoActivity extends Activity implements AdapterView.OnItemS
     private ArrayAdapter<String> arrayAdapter;
     private WMRewardAd windRewardedVideoAd;
     private String placementId;
-    private String userID = "123456789";
 
     private ListView listView;
     private ExpandAdapter adapter;
@@ -106,11 +102,8 @@ public class RewardVideoActivity extends Activity implements AdapterView.OnItemS
                 loadAd();
                 break;
             case R.id.bt_show_ad:
-                HashMap option = new HashMap();
-                option.put(WMConstants.AD_SCENE_ID, "567");
-                option.put(WMConstants.AD_SCENE_DESC, "转盘抽奖");
                 if (windRewardedVideoAd != null && windRewardedVideoAd.isReady()) {
-                    windRewardedVideoAd.show(this, option);
+                    windRewardedVideoAd.showAd(this, null);
                 } else {
                     Log.d("lance", "------Ad is not Ready------");
                 }
@@ -119,10 +112,9 @@ public class RewardVideoActivity extends Activity implements AdapterView.OnItemS
     }
 
     private void loadAd() {
-        Map<String, Object> options = new HashMap<>();
-        options.put("user_id", String.valueOf(userID));
-        windRewardedVideoAd = new WMRewardAd(this, new WMRewardAdRequest(placementId, userID, options));
-        windRewardedVideoAd.setRewardedAdListener(new WMRewardAdListener() {
+        windRewardedVideoAd = new WMRewardAd(this, new WMRewardAdRequest(placementId, String.valueOf(0), null));
+
+        windRewardedVideoAd.setRewardAdListener(new WMRewardAdListener() {
             @Override
             public void onVideoAdLoadSuccess(final String placementId) {
                 Log.d("lance", "------onVideoAdLoadSuccess------" + placementId);
@@ -161,14 +153,14 @@ public class RewardVideoActivity extends Activity implements AdapterView.OnItemS
 
             @Override
             public void onVideoAdLoadError(final WindMillError error, final String placementId) {
-                Log.d("lance", "------onVideoAdLoadError------" + error.toString() + ":" + placementId);
-                logCallBack("onVideoAdLoadError", error.toString());
+                Log.d("lance", "onVideoAdLoadError------onVideoAdLoadError------:" + windRewardedVideoAd.getLoadFailMessages() + ":" + placementId + ":" + error);
+                logCallBack("onVideoAdLoadError", windRewardedVideoAd.getLoadFailMessages() + ":" + placementId);
             }
 
             @Override
             public void onVideoAdPlayError(final WindMillError error, final String placementId) {
-                Log.d("lance", "------onVideoAdPlayError------" + error.toString() + ":" + placementId);
-                logCallBack("onVideoAdPlayError", error.toString());
+                Log.d("lance", "------onVideoAdPlayError------" + windRewardedVideoAd.getLoadFailMessages() + ":" + placementId + ":" + error);
+                logCallBack("onVideoAdPlayError", windRewardedVideoAd.getLoadFailMessages() + ":" + placementId);
             }
         });
 

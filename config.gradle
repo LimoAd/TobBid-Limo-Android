@@ -6,8 +6,6 @@ ext {
                kotlin_version   : '1.4.21',
                buildToolsVersion: "30.0.3",]
 
-    sdkVersion = [limoVersionName: '1.0.0',
-                  limoVersionCode: 100000,
-                ]
+    sdkVersion = [limoVersionName: '1.0.1']
 
 }

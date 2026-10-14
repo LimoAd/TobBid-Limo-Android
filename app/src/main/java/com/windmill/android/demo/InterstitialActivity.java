@@ -24,13 +24,11 @@ import com.windmill.sdk.models.AdInfo;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class InterstitialActivity extends Activity implements WMInterstitialAdListener, AdapterView.OnItemSelectedListener {
 
     private WMInterstitialAd windInterstitialAd;
     private String placementId;
-    private String userID = "123456789";
     private Spinner spinner;
     private ArrayAdapter<String> arrayAdapter;
 
@@ -87,9 +85,7 @@ public class InterstitialActivity extends Activity implements WMInterstitialAdLi
                     adapter.notifyDataSetChanged();
                 }
                 updatePlacementId();
-                Map<String, Object> options = new HashMap<>();
-                options.put("user_id", String.valueOf(userID));
-                windInterstitialAd = new WMInterstitialAd(this, new WMInterstitialAdRequest(placementId, userID, options));
+                windInterstitialAd = new WMInterstitialAd(this, new WMInterstitialAdRequest(placementId, String.valueOf(0), null));
                 windInterstitialAd.setInterstitialAdListener(this);
                 windInterstitialAd.loadAd();
                 break;
@@ -98,7 +94,7 @@ public class InterstitialActivity extends Activity implements WMInterstitialAdLi
                 option.put(WMConstants.AD_SCENE_ID, "567");
                 option.put(WMConstants.AD_SCENE_DESC, "转盘抽奖");
                 if (windInterstitialAd != null && windInterstitialAd.isReady()) {
-                    windInterstitialAd.show(this, option);
+                    windInterstitialAd.showAd(this, option);
                 } else {
                     Log.d("lance", "------Ad is not Ready------");
                 }
@@ -168,14 +164,14 @@ public class InterstitialActivity extends Activity implements WMInterstitialAdLi
 
     @Override
     public void onInterstitialAdLoadError(final WindMillError error, final String placementId) {
-        Log.d("lance", "------onInterstitialAdLoadError------" + error.toString() + ":" + placementId);
-        logCallBack("onInterstitialAdLoadError", error.toString());
+        Log.d("lance", "------onInterstitialAdLoadError------" + windInterstitialAd.getLoadFailMessages() + ":" + placementId + " " + error);
+        logCallBack("onInterstitialAdLoadError", windInterstitialAd.getLoadFailMessages() + ":" + placementId);
     }
 
     @Override
     public void onInterstitialAdPlayError(final WindMillError error, final String placementId) {
-        Log.d("lance", "------onInterstitialAdPlayError------" + error.toString() + ":" + placementId);
-        logCallBack("onInterstitialAdPlayError", error.toString());
+        Log.d("lance", "------onInterstitialAdPlayError------" + windInterstitialAd.getLoadFailMessages() + ":" + placementId + " " + error);
+        logCallBack("onInterstitialAdPlayError", windInterstitialAd.getLoadFailMessages() + ":" + placementId);
     }
 
     private void resetCallBackData() {

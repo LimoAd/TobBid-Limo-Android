@@ -15,12 +15,9 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 
-import com.windmill.android.demo.splash.SplashEyeAdHolder;
-import com.windmill.android.demo.splash.SplashZoomOutManager;
 import com.windmill.sdk.WMConstants;
 import com.windmill.sdk.WindMillError;
 import com.windmill.sdk.models.AdInfo;
-import com.windmill.sdk.splash.IWMSplashEyeAd;
 import com.windmill.sdk.splash.WMSplashAd;
 import com.windmill.sdk.splash.WMSplashAdListener;
 import com.windmill.sdk.splash.WMSplashAdRequest;
@@ -158,7 +155,8 @@ public class SplashActivity extends Activity {
             splashAdRequest.setAppDesc("让世界充满快乐");
         }
 
-        splashAd = new WMSplashAd(this, splashAdRequest, new WMSplashAdListener() {
+        splashAd = new WMSplashAd(this, splashAdRequest);
+        splashAd.setSplashAdListener(new WMSplashAdListener() {
             @Override
             public void onSplashAdSuccessPresent(AdInfo adInfo) {
                 Log.d("lance", "------onSplashAdSuccessPresent------" + adInfo.getPlacementId());
@@ -185,9 +183,8 @@ public class SplashActivity extends Activity {
             }
 
             @Override
-            public void onSplashClosed(AdInfo adInfo, IWMSplashEyeAd splashEyeAd) {
+            public void onSplashClosed(AdInfo adInfo) {
                 Log.d("lance", "------onSplashClosed------" + adInfo.getPlacementId());
-                SplashEyeAdHolder.splashEyeAd = splashEyeAd;
                 jumpWhenCanClick();
             }
         });
@@ -226,16 +223,6 @@ public class SplashActivity extends Activity {
      * 不可点击的开屏，使用该jump方法，而不是用jumpWhenCanClick
      */
     private void jumpMainActivity() {
-
-        if (SplashEyeAdHolder.splashEyeAd != null) {
-            try {
-                SplashZoomOutManager zoomOutManager = SplashZoomOutManager.getInstance(getApplicationContext());
-                zoomOutManager.setSplashInfo(SplashEyeAdHolder.splashEyeAd.getSplashView(), getWindow().getDecorView());
-            } catch (Throwable e) {
-                e.printStackTrace();
-            }
-        }
-
         Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         startActivity(intent);

@@ -19,15 +19,11 @@ import android.widget.Toast;
 import com.windmill.android.demo.log.CallBackInfo;
 import com.windmill.android.demo.log.CallBackItem;
 import com.windmill.android.demo.log.ExpandAdapter;
-import com.windmill.android.demo.splash.SplashZoomOutManager;
 import com.windmill.sdk.WindMillError;
 import com.windmill.sdk.models.AdInfo;
-import com.windmill.sdk.splash.IWMSplashEyeAd;
 import com.windmill.sdk.splash.WMSplashAd;
 import com.windmill.sdk.splash.WMSplashAdListener;
 import com.windmill.sdk.splash.WMSplashAdRequest;
-import com.windmill.sdk.splash.WMSplashEyeAdListener;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -153,7 +149,8 @@ public class SplashAdActivity extends Activity implements AdapterView.OnItemSele
         initViewGroup(this);
 
         WMSplashAdRequest adRequest = new WMSplashAdRequest(placementId, String.valueOf(0), null);
-        splashAd = new WMSplashAd(this, adRequest, new WMSplashAdListener() {
+        splashAd = new WMSplashAd(this, adRequest);
+        splashAd.setSplashAdListener(new WMSplashAdListener() {
             @Override
             public void onSplashAdSuccessPresent(AdInfo adInfo) {
                 logCallBack("onSplashAdSuccessPresent", "");
@@ -183,17 +180,12 @@ public class SplashAdActivity extends Activity implements AdapterView.OnItemSele
             }
 
             @Override
-            public void onSplashClosed(AdInfo adInfo, IWMSplashEyeAd splashEyeAd) {
+            public void onSplashClosed(AdInfo adInfo) {
                 logCallBack("onSplashClosed", "");
-                //（1）当穿山甲、优量汇的开屏广告素材支持点睛时，splashEyeAd不为null
-                //（2）当展示的是快手开屏广告时，splashEyeAd为非null值，但不一定表示此次快手开屏广告的素材支持点睛，不支持时调用IATSplashEyeAd#show()方法会直接回调ATSplashEyeAdListener#onAdDismiss()方法
-                //（3）当splashEyeAd不为null，但是开发者不想支持点睛功能时，必须调用splashEyeAd.destroy()释放资源，然后跳转主页面或者移除开屏View
                 if (splashLY != null) {
                     splashLY.removeAllViews();
                     splashLY.setVisibility(View.GONE);
                 }
-                //展示点睛广告
-                showSplashEyeAd(splashEyeAd);
             }
         });
 
@@ -207,52 +199,6 @@ public class SplashAdActivity extends Activity implements AdapterView.OnItemSele
         } else {
             Toast.makeText(SplashAdActivity.this, "Ad is not Ready", Toast.LENGTH_SHORT).show();
         }
-    }
-
-    private void showSplashEyeAd(final IWMSplashEyeAd splashEyeAd) {
-        if (splashEyeAd == null) {
-            return;
-        }
-        splashEyeAd.show(this, null, new WMSplashEyeAdListener() {
-            @Override
-            public void onAnimationStart(View splashView) {
-                Log.i("lance", "----------onAnimationStart---------: eye ad");
-                //执行缩放动画
-                SplashZoomOutManager zoomOutManager = SplashZoomOutManager.getInstance(SplashAdActivity.this.getApplicationContext());
-
-                ////建议优先使用IATSplashEyeAd#getSuggestedSize()返回的大小作为缩放动画的目标大小
-                int[] suggestedSize = splashEyeAd.getSuggestedSize(SplashAdActivity.this.getApplicationContext());
-                if (suggestedSize != null) {
-                    zoomOutManager.setSplashEyeAdViewSize(suggestedSize[0], suggestedSize[1]);
-                }
-
-//                zoomOutManager.setSplashInfo(splashView, SplashAdActivity.this.getWindow().getDecorView());
-                ViewGroup content = SplashAdActivity.this.findViewById(android.R.id.content);
-                zoomOutManager.startZoomOut(splashView, content, content, new SplashZoomOutManager.AnimationCallBack() {
-
-                    @Override
-                    public void animationStart(int animationTime) {
-                        Log.i("lance", "----------animationStart---------: eye ad");
-                    }
-
-                    @Override
-                    public void animationEnd() {
-                        Log.i("lance", "----------animationEnd---------: eye ad");
-                        //当缩放动画完成时必须调用IATSplashEyeAd#onFinished()通知SDK
-                        splashEyeAd.onFinished();
-                    }
-                });
-            }
-
-            @Override
-            public void onAdDismiss(boolean isSupportEyeSplash) {
-                Log.i("lance", "----------onAdDismiss---------:" + isSupportEyeSplash);
-                //建议在此回调中调用IATSplashEyeAd#destroy()释放资源以及释放其他资源，以免造成内存泄漏
-                SplashZoomOutManager zoomOutManager = SplashZoomOutManager.getInstance(SplashAdActivity.this.getApplicationContext());
-                zoomOutManager.clearStaticData();
-                splashEyeAd.destroy();
-            }
-        });
     }
 
     private void resetCallBackData() {
@@ -275,6 +221,15 @@ public class SplashAdActivity extends Activity implements AdapterView.OnItemSele
         }
         if (adapter != null) {
             adapter.notifyDataSetChanged();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (splashAd != null) {
+            splashAd.destroy();
+            splashAd = null;
         }
     }
 }

@@ -4,6 +4,8 @@ plugins {
 }
 // 生成 "月日_时分" 格式的时间戳
 def timeStamp = new Date().format('MMdd_HHmm')
+// 版本号使用 "年月日"（YYMMDD）格式自动生成
+def limoVersionCode = new Date().format('yyMMdd').toInteger()
 android {
     compileSdkVersion rootProject.ext.android.compileSdkVersion
     buildToolsVersion rootProject.ext.android.buildToolsVersion
@@ -12,7 +14,7 @@ android {
         consumerProguardFiles 'consumer-rules.pro'
         minSdkVersion rootProject.ext.android.minSdkVersion
         targetSdkVersion rootProject.ext.android.targetSdkVersion
-        versionCode rootProject.ext.sdkVersion.limoVersionCode
+        versionCode limoVersionCode
         versionName rootProject.ext.sdkVersion.limoVersionName
         buildConfigField "int", "VERSION_CODE", "$versionCode"
         buildConfigField "String", "VERSION_NAME", "\"$versionName\""
@@ -140,8 +142,8 @@ afterEvaluate {
 
 dependencies {
     compileOnly 'androidx.core:core:1.7.0'
-    compileOnly(files("libs/adbid_sdk_2.1.0.14_0512_1606.aar"))
-    compileOnly(files("libs/wind-common-2.0.2.aar"))
-    compileOnly(files("libs/wind-sdk-4.25.21.aar"))
-    compileOnly(files("libs/windmill-sdk-4.8.7.aar"))
+    compileOnly(files("libs/adbid_sdk_2.1.0.25_1014_1020.aar"))
+    compileOnly(files("libs/wind-common-2.1.1.aar"))
+    compileOnly(files("libs/wind-sdk-4.25.86.aar"))
+    compileOnly(files("libs/windmill-sdk-5.5.6.aar"))
 }

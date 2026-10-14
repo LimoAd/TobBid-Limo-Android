@@ -37,7 +37,9 @@ public class CallBackInfo {
             "onADExposed",
             "onADClicked",
             "onADError",
-            "onADRenderSuccess"};
+            "onADRenderSuccess",
+            "onAutoAdLoadSuccess",
+            "onAutoAdLoadFail"};
 
     public static String[] BANNER_CALLBACK = {
             "onAdLoadSuccess",

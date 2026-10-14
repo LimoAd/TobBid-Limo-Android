@@ -22,9 +22,7 @@ import com.windmill.sdk.banner.WMBannerView;
 import com.windmill.sdk.models.AdInfo;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class BannerActivity extends Activity implements AdapterView.OnItemSelectedListener {
 
@@ -32,7 +30,6 @@ public class BannerActivity extends Activity implements AdapterView.OnItemSelect
     private ArrayAdapter<String> arrayAdapter;
     private WMBannerView mBannerView;
     private String placementId;
-    private String userID = "123456789";
 
     private ListView listView;
     private ExpandAdapter adapter;
@@ -121,10 +118,8 @@ public class BannerActivity extends Activity implements AdapterView.OnItemSelect
     }
 
     private void loadAd() {
-        Map<String, Object> options = new HashMap<>();
-        options.put("user_id", String.valueOf(userID));
         mBannerView = new WMBannerView(this);
-        mBannerView.setAdListener(new WMBannerAdListener() {
+        mBannerView.setBannerAdListener(new WMBannerAdListener() {
             @Override
             public void onAdLoadSuccess(String placementId) {
                 Log.d("lance", "------onAdLoadSuccess------" + placementId);
@@ -133,8 +128,8 @@ public class BannerActivity extends Activity implements AdapterView.OnItemSelect
 
             @Override
             public void onAdLoadError(WindMillError error, String placementId) {
-                Log.d("lance", "------onAdLoadError------" + error.toString() + ":" + placementId);
-                logCallBack("onAdLoadError", error.toString());
+                Log.d("lance", "------onAdLoadError------" + mBannerView.getLoadFailMessages() + ":" + placementId + ":" + error);
+                logCallBack("onAdLoadError", mBannerView.getLoadFailMessages() + ":" + placementId);
             }
 
             @Override
@@ -167,13 +162,13 @@ public class BannerActivity extends Activity implements AdapterView.OnItemSelect
 
             @Override
             public void onAdAutoRefreshFail(WindMillError error, String placementId) {
-                Log.d("lance", "------onAdAutoRefreshFail------" + error.toString() + ":" + placementId);
-                logCallBack("onAdAutoRefreshFail", error.toString());
+                Log.d("lance", "------onAdAutoRefreshFail------" + mBannerView.getLoadFailMessages() + ":" + placementId + ":" + error);
+                logCallBack("onAdAutoRefreshFail", mBannerView.getLoadFailMessages() + ":" + placementId);
             }
         });
 
         mBannerView.setAutoAnimation(true);
-        mBannerView.loadAd(new WMBannerAdRequest(placementId, userID, options));
+        mBannerView.loadAd(new WMBannerAdRequest(placementId, String.valueOf(0), null));
     }
 
     @Override

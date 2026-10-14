@@ -85,16 +85,6 @@ public class MyApplication extends MultiDexApplication {
             }
 
             @Override
-            public boolean isCanUsePhoneState() {
-                return super.isCanUsePhoneState();
-            }
-
-            @Override
-            public String getDevImei() {
-                return super.getDevImei();
-            }
-
-            @Override
             public boolean isCanUseAndroidId() {
                 return super.isCanUseAndroidId();
             }
@@ -107,16 +97,6 @@ public class MyApplication extends MultiDexApplication {
             @Override
             public String getDevOaid() {
                 return super.getDevOaid();
-            }
-
-            @Override
-            public boolean isCanUseWifiState() {
-                return super.isCanUseWifiState();
-            }
-
-            @Override
-            public String getMacAddress() {
-                return super.getMacAddress();
             }
 
             @Override
@@ -133,7 +113,15 @@ public class MyApplication extends MultiDexApplication {
             public boolean isCanUsePermissionRecordAudio() {
                 return super.isCanUsePermissionRecordAudio();
             }
-        }).build());
+        }).build(), new WindMillAd.WindMillAdInitListener() {
+            @Override
+            public void onInitSuccess() {
+            }
+
+            @Override
+            public void onInitFailed(int code, String message) {
+            }
+        });
     }
 
     @Override
